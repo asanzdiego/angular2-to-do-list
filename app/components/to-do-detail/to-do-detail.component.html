@@ -1,0 +1,176 @@
+<div *ngIf="toDo" class="card hoverable animated {{toDo.animatedClass}}" [style.background-color]="colors.getHexColorFromToDo(toDo)">
+    <div class="card-content">
+        <div class="pull-right">
+            <button *ngIf="!toDo.editable" (click)="editToDo()" class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="fa fa-pencil right" aria-hidden="true"></i>Editar</button>
+            <button *ngIf="toDo.editable" (click)="saveToDo()" class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="fa fa-floppy-o right" aria-hidden="true"></i>Guardar</button>
+            <button (click)="deleteToDo()" class="btn-floating btn-large waves-effect waves-light red">
+                <i class="fa fa-trash right" aria-hidden="true"></i>Eliminar</button>
+        </div>
+        <h3 class="h3-responsive">{{toDo.name}}&nbsp;</h3>
+        <div *ngIf="!toDo.editable">
+            <div *ngIf="toDo.description" class="row">
+                <i class="fa fa-align-justify fa-2x col-xs-1" aria-hidden="true"></i>
+                <p class="card-text col-xs-11">{{toDo.description}}</p>
+            </div>
+            <div *ngIf="toDo.date || toDo.start || toDo.end" class="row">
+                <i class="fa fa-calendar fa-2x col-xs-1" aria-hidden="true"></i>
+                <p class="card-text col-xs-11">{{toDo.date}}
+                    <span *ngIf="!toDo.isAllDay">
+                        <span *ngIf="toDo.start"> de <i class="fa fa-clock-o" aria-hidden="true"></i> {{toDo.start}}</span>
+                    <span *ngIf="toDo.end"> a <i class="fa fa-clock-o" aria-hidden="true"></i> {{toDo.end}}</span>
+                    </span>
+                </p>
+            </div>
+            <div *ngIf="toDo.priority" class="row">
+                <i class="fa fa-line-chart fa-2x col-xs-1" aria-hidden="true"></i>
+                <p class="card-text col-xs-11">Prioridad {{colors.getPriorityNameFromToDo(toDo)}}</p>
+            </div>
+            <div *ngIf="toDo.image" class="row">
+                <i class="fa fa-picture-o fa-2x col-xs-1" aria-hidden="true"></i>
+                <img class="col-xs-11" src="{{toDo.image}}" alt="Imagen de la tarea '{{toDo.name}}'" />
+            </div>
+            <div *ngIf="toDo.longitude && toDo.latitude" class="row">
+                <i class="fa fa-map fa-2x col-xs-1" aria-hidden="true"></i>
+                <p class="card-text col-xs-5">Longitud: {{toDo.longitude}}</p>
+                <p class="card-text col-xs-6">Latitud: {{toDo.latitude}}</p>
+                <div class="col-xs-offset-1 col-xs-11">
+                    <sebm-google-map [latitude]="toDo.latitude" [longitude]="toDo.longitude" [zoom]="16">
+                        <sebm-google-map-marker [latitude]="toDo.latitude" [longitude]="toDo.longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)">
+                            <sebm-google-map-info-window>
+                                <strong>{{toDo.name}}</strong>
+                            </sebm-google-map-info-window>
+                        </sebm-google-map-marker>
+                    </sebm-google-map>
+                </div>
+            </div>
+        </div>
+        <form *ngIf="toDo.editable">
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    <label for="id">Identificador: </label>
+                    <input id="id" class="form-control col-xs-10" type="text" [(ngModel)]="toDo.id" disabled="true" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <label for="name" class="active">Tarea: </label>
+                    <input id="name" class="form-control" type="text" required [(ngModel)]="toDo.name" (change)=autoSaveToDo() placeholder="Introduce el nombre de la tarea" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-align-justify" aria-hidden="true"></i>
+                    <label for="description" class="active">Descripción: </label>
+                    <input id="description" class="form-control" type="text" [(ngModel)]="toDo.description" (change)=autoSaveToDo() placeholder="Introduce la descripción de la tarea" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                    <label for="date" class="active">Fecha: </label>
+                    <input id="date" class="form-control" type="date" data-format="dd/MM/yyyy" [(ngModel)]="toDo.date" (change)=autoSaveDate($event) placeholder="Introduce la fecha de la tarea" />
+                </div>
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-birthday-cake" aria-hidden="true"></i>
+                    <label for="isAllDay" class="active">Todo el día: </label>
+                    <div id="isAllDay" class="btn-group" role="group" aria-label="Todo el día">
+                        <button type="button" (click)="selectIsAllDay(true)" class="btn {{classIsAllDay(true)}}">Si</button>
+                        <button type="button" (click)="selectIsAllDay(false)" class="btn {{classIsAllDay(false)}}">No</button>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!toDo.isAllDay" class="row">
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    <label for="start" class="active">Empieza: <span *ngIf="toDo.start" style="font-weight: 400;">({{toDo.start}})</span></label>
+                    <div id="start">
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" max="23" [(ngModel)]="toDo.hhStart" (change)=autoSaveToDo() placeholder="hh" />
+                        </div>
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" max="59" [(ngModel)]="toDo.mmStart" (change)=autoSaveToDo() placeholder="mm" />
+                        </div>
+                    </div>
+                    <!--input id="start" class="form-control" type="time" [(ngModel)]="toDo.start" (change)=autoSaveToDo() placeholder="Introduce la hora a la que empieza" /-->
+                </div>
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    <label for="end" class="active">Termina: <span *ngIf="toDo.end" style="font-weight: 400;">({{toDo.end}})</span></label>
+                    <div id="end">
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" max="23" [(ngModel)]="toDo.hhEnd" (change)=autoSaveToDo() placeholder="hh" />
+                        </div>
+                        <div class="col-xs-6">
+                            <input class="form-control" type="number" max="59" [(ngModel)]="toDo.mmEnd" (change)=autoSaveToDo() placeholder="mm" />
+                        </div>
+                    </div>
+                    <!--input id="end" class="form-control" type="time" [(ngModel)]="toDo.end" (change)=autoSaveToDo() placeholder="Introduce la hora a la que termina" /-->
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+                    <label for="color" class="active">Color: </label>
+                    <div id="color">
+                        <colors></colors>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-line-chart" aria-hidden="true"></i>
+                    <label for="priority" class="active">Prioridad: </label>
+                    <div id="priority" class="btn-group" role="group" aria-label="Prioridad">
+                        <button type="button" (click)="selectPriority(colors.lowPriorityShadow)" class="btn {{classPriority(colors.lowPriorityShadow)}}">{{colors.lowPriorityName}}</button>
+                        <button type="button" (click)="selectPriority(colors.normalPriorityShadow)" class="btn {{classPriority(colors.normalPriorityShadow)}}">{{colors.normalPriorityName}}</button>
+                        <button type="button" (click)="selectPriority(colors.highPriorityShadow)" class="btn {{classPriority(colors.highPriorityShadow)}}">{{colors.highPriorityName}}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                    <label for="image" class="active">Imagen: </label>
+                    <div id="image">
+                        <images [image]=toDo.image></images>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                    <label for="longitude" class="active">Longitud: </label>
+                    <input id="longitude" class="form-control" type="number" [(ngModel)]="toDo.longitude" (change)=autoSaveToDo() placeholder="Introduce la longitud" />
+                </div>
+                <div class="md-form col-xs-6">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                    <label for="latitude" class="active">Latitud: </label>
+                    <input id="latitude" class="form-control" type="number" [(ngModel)]="toDo.latitude" (change)=autoSaveToDo() placeholder="Introduce la latitud" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="md-form col-xs-12">
+                    <i class="fa fa-map" aria-hidden="true"></i>
+                    <label for="map" class="active">Mapa: (puedes mover el marcador para cambiar las coordenadas)</label>
+                    <div id="map">
+                        <sebm-google-map [latitude]="toDo.latitude" [longitude]="toDo.longitude" [zoom]="16">
+                            <sebm-google-map-marker [latitude]="toDo.latitude" [longitude]="toDo.longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)">
+                                <sebm-google-map-info-window>
+                                    <strong>{{toDo.name}}</strong>
+                                </sebm-google-map-info-window>
+                            </sebm-google-map-marker>
+                        </sebm-google-map>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div *ngIf="mensaje" class="btn btn-default btn-lg btn-block blue lighten-2 text-white z-depth-1">
+            <i class="fa fa-info" aria-hidden="true"></i> {{mensaje}}</div>
+        <div *ngIf="error" (click)="closeError()" class="btn btn-danger btn-lg btn-block lighten-2 text-white z-depth-1">
+            <i class="fa fa-info" aria-hidden="true"></i> {{error}}</div>
+    </div>
+</div>

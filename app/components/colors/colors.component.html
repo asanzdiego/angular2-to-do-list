@@ -1,0 +1,4 @@
+<div class="col-xs-1" *ngFor="let color of colors.reducedNameColors" role="button"
+    (click)="selectColor(color)" [style.background-color]="colors.getDefaultHexColor(color)">
+        &nbsp;<span class="sr-only">{{color}}</span>
+</div>
