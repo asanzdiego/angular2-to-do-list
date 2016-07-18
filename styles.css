@@ -1,0 +1,81 @@
+.panel {
+    border-color: #30cfc0 !important;
+}
+.panel-heading {
+    background-color: #30cfc0 !important;
+    color: white;
+}
+.text-white {
+    color: white !important;
+}
+.button-list {
+    margin-top: 1.5em;
+}
+.h5-responsive {
+    font-weight: 400;
+    border: 0px !important;
+}
+.my-badge {
+    margin-top: 1em;
+}
+.image-empleado {
+    width: 5em;
+}
+.image-empleado-medium {
+    width: 7em;
+    margin: -1em 1em -1em -1em;
+}
+.image-empleado-big {
+    width: 8em;
+    margin: -1.5em 1.5em -1.5em -1.5em;
+}
+.drag-and-drop {
+    border: 1px dashed #333;
+    padding-top: 1em;
+}
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
+}
+.fileUpload input.upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+a {
+    color: #333;
+}
+a:hover {
+    color: #2196F3;
+    text-decoration: underline;
+}
+.can-add-to-proyect, .proyect-finish {
+    background-color: #eee;
+    border: 1px solid #333;
+}
+.proyect-titile-finish, .proyect-titile-finish:hover {
+    color: #999;
+    cursor: default;
+}
+label, input {
+    color: #333 !important;
+}
+input {
+    border-bottom: 1px solid #333 !important;
+}
+input[disabled], .drag-and-drop {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+}
+img {
+    max-width: 100%;
+}
+.drag-and-drop, .sebm-google-map-container {
+    height: 18em;
+}

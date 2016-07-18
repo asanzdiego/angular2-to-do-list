@@ -1,0 +1,14 @@
+<div *ngIf="!image" (drop)="onDrop($event)" (dragover)="onDragOver($event)"
+    class="drag-and-drop text-center">
+    <p><img src="img/arrow-transparent.gif"></p>
+    <p>Pincha y arrastra una imagen aquí.</p>
+    <p>O selecciona una imagen pinchando el siguiente botón:</p>
+    <div class="fileUpload btn btn-primary">
+        <span>SELLECCIONAR IMAGEN</span>
+        <input type="file" class="upload" (change)="onChangeFile($event)" />
+    </div>
+</div>
+<img *ngIf="image" class="col-xs-10" src="{{image}}" alt="Imagen de la tarea" />
+<button *ngIf="image" (click)="deleteImage()"
+    class="btn-floating btn-large waves-effect waves-light red pull-right col-xs-2">
+    <i class="fa fa-times right" aria-hidden="true"></i>Eliminar</button>

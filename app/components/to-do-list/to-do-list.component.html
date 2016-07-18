@@ -1,0 +1,37 @@
+<div class="col-md-6">
+    <div class="panel animated zoomIn">
+        <div class="panel-heading">
+            <div class="pull-right button-list">
+                <button (click)=newToDo() class="btn-floating btn-large waves-effect waves-light red">
+                    <i class="fa fa-plus right" aria-hidden="true"></i>Nueva Tarea</button>
+            </div>
+            <h2 class="h2-responsive">Lista de Tareas</h2>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="30%"><a (click)=orderByName() role="button">Tarea <i [class]="nameOrderIcon" aria-hidden="true"></i></a></th>
+                        <th width="50%"><a (click)=orderByDate() role="button">Fecha <i [class]="dateOrderIcon" aria-hidden="true"></i></a></th>
+                        <th width="20%"><a (click)=orderByPriority() role="button">Prioridad <i [class]="priorityOrderIcon" aria-hidden="true"></i></a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let toDo of toDoList" (click)="selectToDo(toDo)" role="button" [style.background-color]="colors.getHexColorFromToDo(toDo)">
+                        <td>{{toDo.name}}</td>
+                        <td>{{toDo.date}}
+                            <span *ngIf="!toDo.isAllDay">
+                                <span *ngIf="toDo.start"> de {{toDo.start}}</span>
+                                <span *ngIf="toDo.end"> a {{toDo.end}}</span>
+                            </span>
+                        </td>
+                        <td>{{colors.getPriorityNameFromToDo(toDo)}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-6">
+    <to-do-detail *ngIf="selectedToDo" [toDo]="selectedToDo"></to-do-detail>
+</div>
